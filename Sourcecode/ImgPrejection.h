@@ -1,5 +1,5 @@
 /*
-https://github.com/Maplemo/Image-quadrilateral-extraction-on-PYNQ-z2
+https://github.com/Maplemo/Extraction-of-quadrilateral-in-image
 KK 2020.7.29
 */
 #ifndef _IMGPREJECTION_
