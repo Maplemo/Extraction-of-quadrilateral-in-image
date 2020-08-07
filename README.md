@@ -1,5 +1,4 @@
 # Extraction-of-quadrilateral-in-image  
-Xilinx Summer School Project
 ### Board
 PYNQ-z2  
 ### Version of Vivado
