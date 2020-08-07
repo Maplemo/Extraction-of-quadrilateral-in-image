@@ -1,26 +1,27 @@
 /*
-https://github.com/Maplemo/Image-quadrilateral-extraction-on-PYNQ-z2
+å›¾åƒæŠ•å½±å˜æ¢HLSå®ç°
+https://github.com/Maplemo/Extraction-of-quadrilateral-in-image
 KK 2020.7.29
 */
 #include "ImgPrejection.h"
 
-//¼ÆËãĞĞÁĞÊ½µÄÖµ
+//è®¡ç®—è¡Œåˆ—å¼çš„å€¼
 double det(double a[8][8], int n)
 {
 	double result = 1;
 	int i, j;
-	double m;                          //mÎªÖĞ¼ä±äÁ¿
-	int max_a_line = 0;               //max_a_lineÎª×î´óÔªËØËùÔÚµÄĞĞ
-	double max_a = 0;            //max_aÎª×î´óÔªËØµÄÖµ
-	int out_i = 0;                      //out_iÎªiµÄ³õÊ¼Öµ
+	double m;                          //mä¸ºä¸­é—´å˜é‡
+	int max_a_line = 0;               //max_a_lineä¸ºæœ€å¤§å…ƒç´ æ‰€åœ¨çš„è¡Œ
+	double max_a = 0;            //max_aä¸ºæœ€å¤§å…ƒç´ çš„å€¼
+	int out_i = 0;                      //out_iä¸ºiçš„åˆå§‹å€¼
 	det_loop:
 	for (i = 0; i < n; i++)
 	{
 		#pragma HLS loop_tripcount min=7 max=8
-		max_a_line = i;               //max_a_lineÎª×î´óÔªËØËùÔÚµÄĞĞ
-		max_a = a[i][i];            //max_aÎª×î´óÔªËØµÄÖµ
-		out_i = i;                      //out_iÎªiµÄ³õÊ¼Öµ
-		find_line_loop:				//ÕÒ³öÁĞÎªiµÄ×î´óÖ÷ÔªËØËùÔÚµÄĞĞ
+		max_a_line = i;               //max_a_lineä¸ºæœ€å¤§å…ƒç´ æ‰€åœ¨çš„è¡Œ
+		max_a = a[i][i];            //max_aä¸ºæœ€å¤§å…ƒç´ çš„å€¼
+		out_i = i;                      //out_iä¸ºiçš„åˆå§‹å€¼
+		find_line_loop:				//æ‰¾å‡ºåˆ—ä¸ºiçš„æœ€å¤§ä¸»å…ƒç´ æ‰€åœ¨çš„è¡Œ
 		for (int t = i + 1; t < n; t++)
 		{
 			#pragma HLS loop_tripcount min=1 max=8
@@ -39,7 +40,7 @@ double det(double a[8][8], int n)
 		j=max_a_line;
 
 		if (i != j)
-		{//½»»»Á½ĞĞµÄ´ÓlineÁĞµ½nÁĞµÄÔªËØ
+		{//äº¤æ¢ä¸¤è¡Œçš„ä»lineåˆ—åˆ°nåˆ—çš„å…ƒç´ 
 			chang_line_loop:
 			for (int k = i; k < n; k++)
 			{
@@ -54,7 +55,7 @@ double det(double a[8][8], int n)
 			return 0;
 		result = result * a[i][i];
 		if (i < n - 1)
-		{//ÏûÈ¥µÚiÁĞ¡¢iĞĞÒÔÏÂµÄÔªËØ
+		{//æ¶ˆå»ç¬¬iåˆ—ã€iè¡Œä»¥ä¸‹çš„å…ƒç´ 
 			det_label9:for (int v = i + 1; v < n; v++)
 			{
 				#pragma HLS loop_tripcount min=1 max=8
@@ -71,14 +72,14 @@ double det(double a[8][8], int n)
 	return result;
 }
 
-//ÀûÓÃĞĞÁĞÊ½Çó×ª»»¾ØÕóµÄ·½³Ì×é
+//åˆ©ç”¨è¡Œåˆ—å¼æ±‚è½¬æ¢çŸ©é˜µçš„æ–¹ç¨‹ç»„
 void GetMatrix(ap_uint<32> x[4], ap_uint<32> y[4], ap_uint<32> h, ap_uint<32> w,double Mat_Trans[8])
 {
 	double Mat_Val[8] = { 0 }, Mat_Coef[8][8] = { 0 };
 	double a[8][8], Mat_TEMP[8][8], A[8][8], Det_val;
 	double TempResult = 0;
 
-	/*³õÊ¼»¯×ª»»¾ØÕó·½³Ì×éµÄÏµÊı¾ØÕó*/
+	/*åˆå§‹åŒ–è½¬æ¢çŸ©é˜µæ–¹ç¨‹ç»„çš„ç³»æ•°çŸ©é˜µ*/
 	Mat_Coef[0][0] = x[0]; Mat_Coef[0][3] = y[0]; Mat_Coef[0][6] = 1;
 	Mat_Coef[1][1] = x[0]; Mat_Coef[1][4] = y[0]; Mat_Coef[1][7] = 1;
 	Mat_Coef[2][0] = x[1]; Mat_Coef[2][3] = y[1]; Mat_Coef[2][6] = 1;
@@ -88,7 +89,7 @@ void GetMatrix(ap_uint<32> x[4], ap_uint<32> y[4], ap_uint<32> h, ap_uint<32> w,
 	Mat_Coef[6][0] = x[3]; Mat_Coef[6][2] = x[3] * (double)(-w); Mat_Coef[6][3] = y[3]; Mat_Coef[6][5] = y[3] * (double)(-w); Mat_Coef[6][6] = 1;
 	Mat_Coef[7][1] = x[3]; Mat_Coef[7][4] = y[3]; Mat_Coef[7][7] = 1;
 
-	Mat_Val[3] = h; Mat_Val[4] = w; Mat_Val[5] = h; Mat_Val[6] = w;//µÈÊ½ÓÒ±ß
+	Mat_Val[3] = h; Mat_Val[4] = w; Mat_Val[5] = h; Mat_Val[6] = w;//ç­‰å¼å³è¾¹
 
 	GetMatrix_label0:for (int i = 0; i < 8; i++)
 	{
@@ -98,7 +99,7 @@ void GetMatrix(ap_uint<32> x[4], ap_uint<32> y[4], ap_uint<32> h, ap_uint<32> w,
 		}
 	}
 
-	Det_val = det(a, 8);//ÇóĞĞÁĞÊ½
+	Det_val = det(a, 8);//æ±‚è¡Œåˆ—å¼
 	GetMatrix_label1:for (int i = 0; i < 8; i++)
 	{
 		for (int j = 0; j < 8; j++)
@@ -141,8 +142,8 @@ void GetMatrix(ap_uint<32> x[4], ap_uint<32> y[4], ap_uint<32> h, ap_uint<32> w,
 
 
 /*
-ÊäÈëÔ­Ê¼Í¼Ïñ,ĞèÒªÀ­ÉìÌáÈ¡µÄËÄ¸ö¶¥µã×ø±êÒÔ¼°Ä¿±êÍ¼ÏñµÄ³ß´ç
-ÆäÖĞºá×ø±êºÍ×İ×ø±ê·Ö±ğ´«µİ£¬xÎªºá×ø±êÖµ£¬yÎª×İ×ø±êÖµ
+è¾“å…¥åŸå§‹å›¾åƒ,éœ€è¦æ‹‰ä¼¸æå–çš„å››ä¸ªé¡¶ç‚¹åæ ‡ä»¥åŠç›®æ ‡å›¾åƒçš„å°ºå¯¸
+å…¶ä¸­æ¨ªåæ ‡å’Œçºµåæ ‡åˆ†åˆ«ä¼ é€’ï¼Œxä¸ºæ¨ªåæ ‡å€¼ï¼Œyä¸ºçºµåæ ‡å€¼
 */
 void ImgPrejection(wide_stream* in_stream, wide_stream* out_stream,
 		ap_uint<32> x0,ap_uint<32> x1,ap_uint<32> x2,ap_uint<32> x3,
@@ -176,9 +177,9 @@ void ImgPrejection(wide_stream* in_stream, wide_stream* out_stream,
 	x[0]=x0;x[1]=x1;x[2]=x2;x[3]=x3;
 	y[0]=y0;y[1]=y1;y[2]=y2;y[3]=y3;
 	GetMatrix(x,y,hight,width,M_Trans);
-	int u = 0, v = 0;//±ä»»ºóµÄ×ø±ê
-	RGB_IMAGE img(540, 960);//ÊäÈëÍ¼Ïñ
-	RGB_IMAGE imgOut(540, 960);//Êä³öÍ¼Ïñ
+	int u = 0, v = 0;//å˜æ¢åçš„åæ ‡
+	RGB_IMAGE img(540, 960);//è¾“å…¥å›¾åƒ
+	RGB_IMAGE imgOut(540, 960);//è¾“å‡ºå›¾åƒ
 	RGB_PIXEL in_pixel;
 	RGB_PIXEL out_pixel;
 	ap_uint<8> B[960][540];
@@ -187,7 +188,7 @@ void ImgPrejection(wide_stream* in_stream, wide_stream* out_stream,
 	const int packets = col_packets*540;
 	ImgProjection_label3:for(int r = 0; r < packets; r++){
 #pragma HLS pipeline II=4
-		ap_uint<32> dat = in_stream->data;//ÊäÈëÁ÷Êı¾İ¸³Öµ**
+		ap_uint<32> dat = in_stream->data;//è¾“å…¥æµæ•°æ®èµ‹å€¼**
 		img.write(GRAY_PIXEL(dat.range(7,0)));
 		img.write(GRAY_PIXEL(dat.range(15,8)));
 		img.write(GRAY_PIXEL(dat.range(23,16)));
@@ -214,7 +215,7 @@ void ImgPrejection(wide_stream* in_stream, wide_stream* out_stream,
 
 			u = ((j - M_Trans[6]) - (M_Trans[3] - M_Trans[5] * j) * v) / (M_Trans[0] - M_Trans[2] * j);
 
-			if (u > 0 && u < 960 && v > 0 && v < 540)//µãÔÚÇøÓòÄÚ
+			if (u > 0 && u < 960 && v > 0 && v < 540)//ç‚¹åœ¨åŒºåŸŸå†…
 			{
 				out_pixel.val[0]=B[u][v];
 				imgOut << out_pixel;
